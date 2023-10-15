@@ -26,10 +26,20 @@ class Arithm_dsl:
             return ("int", ("int",))
         elif op in ["eq", "gt", "lt"]:
             return ("bool", ("int", "int"))
-        elif op in ["if"]:
-            return ("int", ("bool", "int", "int"))
         else:
             assert False, "Invalid operator " + str(op)
+    
+    def get_op_arg_types(self, op):
+        _, arg_types = self.get_op_types(op)
+        return arg_types
+    
+    def get_op_return_type(self, op):
+        return_type, _ = self.get_op_types(op)
+        return return_type
+    
+    def get_op_arity(self, op):
+        op_arity = len(self.get_op_arg_types(op))
+        return op_arity 
     
     def execute_op(self, op, args):
         if op == "add":
@@ -60,3 +70,29 @@ class Arithm_dsl:
                 return self.execute_op(parse_tree[0], evaluated_args)
         else:
             return parse_tree
+    
+    def extract_constants(self, input_examples, output_examples, input_type, output_type):
+        default_constants = [0, 1, 2, 3, 5, 7, 11] #prime numbers
+        constant_list = []
+        for constant_value in default_constants:
+            constants_for_examples = [constant_value for _ in range(len(input_examples))]
+            constant_list.append(("int", (constant_value, constants_for_examples)))
+        
+        return constant_list
+    
+    def _infer_types(self, example):
+        if type(example) is int:
+            return "int"
+        elif type(example) is bool:
+            return "bool"
+        else:
+            assert False, "no type found for " + str(example)
+                
+    
+    def infer_types(self, examples):
+        example_types = []
+        for example in examples:
+            ex_type = self._infer_types(example)
+            example_types.append(ex_type)
+        
+        return example_types
