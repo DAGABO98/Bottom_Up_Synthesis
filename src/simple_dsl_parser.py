@@ -1,7 +1,7 @@
 import io
 import tokenize
 
-class parser:
+class Simple_parser:
 
     def __init__(self, dsl):
         self.dsl = dsl
