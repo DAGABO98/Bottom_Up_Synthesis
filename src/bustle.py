@@ -1,3 +1,6 @@
+import traceback
+import datetime
+
 class Bustle:
     def __init__(self, dsl):
         self.dsl = dsl
@@ -42,7 +45,7 @@ class Bustle:
         if self.check_termination(value_type, output_type, value, output_examples):
             return self.get_value_expression(value)
         
-        self.add_value(self, weight, value_type, value)
+        self.add_value(weight, value_type, value)
         return None
 
     
@@ -77,20 +80,19 @@ class Bustle:
 
     def predict(self, variable_names, input_examples, output_examples, weight_threshold=25):
         self.E = {}
-        input_type = self.dsl.infer_types(input_examples)
-        output_type = self.dsl.infer_types(output_examples)
+        input_type = self.dsl.infer_types(input_examples)[0]
+        output_type = self.dsl.infer_types(output_examples)[0]
         constant_values = self.dsl.extract_constants(input_examples, output_examples, input_type, output_type)
 
         input_values = []
-        for input_example in input_examples:
-            for variable_index, variable_name in enumerate(variable_names):
-                inputs_for_examples = [input_example[variable_index] for _ in range(len(input_examples))]
-                input_values.append((input_type[variable_index], (("input", variable_name), inputs_for_examples)))
+        for variable_index, variable_name in enumerate(variable_names):
+            inputs_for_examples = [input_examples[i][variable_index] for i in range(len(input_examples))]
+            input_values.append((input_type[variable_index], (("input", variable_name), inputs_for_examples)))
 
         initial_values = constant_values + input_values
         for value_type, value in initial_values:
             weight = 1
-            self.add_value(self, weight, value_type, value)
+            self.add_value(weight, value_type, value)
             
         for weight in range(2, weight_threshold):
             for op in self.dsl.valid_ops:
@@ -112,4 +114,33 @@ class Bustle:
                         return expression
         
         return self.E
+
+def test():
+    from arithm_dsl import Arithm_dsl
+
+    arithm_dsl = Arithm_dsl()
+    arithm_bustle = Bustle(arithm_dsl)
+
+    expression1 = arithm_bustle.predict(variable_names=["x", "y"], input_examples=[[2,3], [4,5]], output_examples=[6, 20], weight_threshold=5)
+    assert expression1 == ('mul', [('input', 'x'), ('input', 'y')])
+
+    expression2 = arithm_bustle.predict(variable_names=["x", "y"], input_examples=[[2,4], [4,5]], output_examples=[-6, -9], weight_threshold=5)
+    assert expression2 == ('neg', [('add', [('input', 'x'), ('input', 'y')])])
+
+    expression3 = arithm_bustle.predict(variable_names=["x", "y", "z"], input_examples=[[1,3,5], [7,11,13]], output_examples=[15, 1001], weight_threshold=5)
+    assert expression3 == ('mul', [('input', 'x'), ('mul', [('input', 'y'), ('input', 'z')])])
+
+    print("Success")
+
+if __name__ == "__main__":
+    """Performs execution delta of the process."""
+    print("Performing unit tests for BUSTLE")
+    pStart = datetime.datetime.now()
+    try:
+        test()
+    except Exception as errorMainContext:
+        print("Fail End Process: ", errorMainContext)
+        traceback.print_exc()
+    qStop = datetime.datetime.now()
+    print("Execution time: " + str(qStop-pStart))
 
