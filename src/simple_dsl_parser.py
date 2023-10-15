@@ -14,7 +14,7 @@ class Simple_parser:
     def generate_parse_tree(self, tokens, current_index=0):
         if self.dsl.is_valid_op(tokens[current_index]):
             op = self.dsl.obtain_op_name(tokens[current_index])
-            return_type, arg_types = self.dsl.get_types(op)
+            return_type, arg_types = self.dsl.get_op_types(op)
 
             # Check valid syntax of operation call
             current_index += 1
