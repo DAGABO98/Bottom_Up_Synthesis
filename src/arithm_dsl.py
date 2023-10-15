@@ -81,7 +81,13 @@ class Arithm_dsl:
         return constant_list
     
     def _infer_types(self, example):
-        if type(example) is int:
+        if type(example) is list:
+            type_list = []
+            for element in example:
+                elem_type = self._infer_types(element)
+                type_list.append(elem_type)
+            return type_list
+        elif type(example) is int:
             return "int"
         elif type(example) is bool:
             return "bool"
