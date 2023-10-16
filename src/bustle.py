@@ -1,5 +1,6 @@
 import traceback
 import datetime
+import optparse
 
 class Bustle:
     def __init__(self, dsl):
@@ -78,7 +79,7 @@ class Bustle:
         expression = (op, arg_exprs)
         return (expression, values)
 
-    def predict(self, variable_names, input_examples, output_examples, weight_threshold=25):
+    def synthesize(self, variable_names, input_examples, output_examples, weight_threshold=25):
         self.E = {}
         input_type = self.dsl.infer_types(input_examples)[0]
         output_type = self.dsl.infer_types(output_examples)[0]
@@ -114,23 +115,45 @@ class Bustle:
                         return expression
         
         return self.E
-
-def test():
+    
+def test_arithm_dsl():
     from arithm_dsl import Arithm_dsl
 
     arithm_dsl = Arithm_dsl()
     arithm_bustle = Bustle(arithm_dsl)
 
-    expression1 = arithm_bustle.predict(variable_names=["x", "y"], input_examples=[[2,3], [4,5]], output_examples=[6, 20], weight_threshold=5)
+    expression1 = arithm_bustle.synthesize(variable_names=["x", "y"], input_examples=[[2,3], [4,5]], output_examples=[6, 20], weight_threshold=5)
     assert expression1 == ('mul', [('input', 'x'), ('input', 'y')])
 
-    expression2 = arithm_bustle.predict(variable_names=["x", "y"], input_examples=[[2,4], [4,5]], output_examples=[-6, -9], weight_threshold=5)
+    expression2 = arithm_bustle.synthesize(variable_names=["x", "y"], input_examples=[[2,4], [4,5]], output_examples=[-6, -9], weight_threshold=5)
     assert expression2 == ('neg', [('add', [('input', 'x'), ('input', 'y')])])
 
-    expression3 = arithm_bustle.predict(variable_names=["x", "y", "z"], input_examples=[[1,3,5], [7,11,13]], output_examples=[15, 1001], weight_threshold=5)
+    expression3 = arithm_bustle.synthesize(variable_names=["x", "y", "z"], input_examples=[[1,3,5], [7,11,13]], output_examples=[15, 1001], weight_threshold=5)
     assert expression3 == ('mul', [('input', 'x'), ('mul', [('input', 'y'), ('input', 'z')])])
 
     print("Success")
+
+def test_string_dsl():
+    from string_dsl import String_dsl
+
+    string_dsl = String_dsl()
+    string_bustle = Bustle(string_dsl)
+
+    pass
+
+def test():
+    parser = optparse.OptionParser()
+    parser.add_option("--mode", type=int, dest='mode', default=0, help='Select mode of operation.')
+
+    (options, args) = parser.parse_args()
+
+    if options.mode == 0:
+        test_arithm_dsl()
+    elif options.mode == 1:
+        test_string_dsl()
+    else:
+        test_arithm_dsl()
+        test_string_dsl()
 
 if __name__ == "__main__":
     """Performs execution delta of the process."""
