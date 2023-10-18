@@ -85,7 +85,7 @@ class Bustle:
         self.E = {}
         input_type = self.dsl.infer_types(input_examples)[0]
         output_type = self.dsl.infer_types(output_examples)[0]
-        constant_values = self.dsl.extract_constants(input_examples, output_examples, input_type, output_type)
+        constant_values = self.dsl.extract_constants(input_examples, output_examples)
 
         input_values = []
         for variable_index, variable_name in enumerate(variable_names):
