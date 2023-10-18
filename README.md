@@ -1,5 +1,5 @@
-# Bottom_Up_Synthesis
-Repo for simple implementation of Bottom Up Synthesis for class project
+# Bottom Up Synthesis
+Repo for simple implementation of Bottom Up Synthesis for first class assignment
 
 ## Testing
 
