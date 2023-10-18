@@ -98,7 +98,7 @@ class Bustle:
             self.add_value(weight, value_type, value)
             
         for weight in range(2, weight_threshold):
-            for op in self.dsl.valid_ops:
+            for op in self.dsl.valid_ops.values():
                 n = self.dsl.get_op_arity(op)
                 value_type = self.dsl.get_op_return_type(op)
                 arg_types = self.dsl.get_op_arg_types(op)
@@ -192,15 +192,84 @@ def test_arithm_dsl():
     assert expression5 == expected_output5
 
     print("")
-    print("The system passed all test cases!")
+    print("The system passed all test cases for Arithm DSL!")
 
 def test_string_dsl():
     from string_dsl import String_dsl
+    from simple_dsl_parser import Simple_parser
+
+    print("")
+    print("Executing BUSTLE for String DSL...")
 
     string_dsl = String_dsl()
     string_bustle = Bustle(string_dsl)
+    string_parser = Simple_parser(string_dsl)
 
-    pass
+    # Test 1
+    variable_names1 = ["x"]
+    input_examples1 = [["hello"], ["world"]]
+    output_examples1 = ["h", "w"]
+    expected_output1 = ('Left', [('input', 'x'), 1])
+    expression1 = run_synthesize(string_bustle, string_parser, variable_names1, input_examples1, 
+                                 output_examples1, expected_output1, test_num=1)
+    assert expression1 == expected_output1
+
+    # Test 2
+    variable_names2 = ["x"]
+    input_examples2 = [["hello"], ["world"]]
+    output_examples2 = ["o", "d"]
+    expected_output2 = ('Right', [('input', 'x'), 1])
+    expression2 = run_synthesize(string_bustle, string_parser, variable_names2, input_examples2, 
+                                 output_examples2, expected_output2, test_num=2)
+    assert expression2 == expected_output2
+
+    # Test 3
+    variable_names3 = ["x", "y"]
+    input_examples3 = [["hello", "you"], ["world", "domination"]]
+    output_examples3 = ["helloyou", "worlddomination"]
+    expected_output3 = ('Concatenate', [('input', 'x'), ('input', 'y')])
+    expression3 = run_synthesize(string_bustle, string_parser, variable_names3, input_examples3, 
+                                 output_examples3, expected_output3, test_num=3)
+    assert expression3 == expected_output3
+
+    # Test 4
+    variable_names4 = ["x", "y"]
+    input_examples4 = [["hello", "you"], ["world", "domination"]]
+    output_examples4 = ["hello you", "world domination"]
+    expected_output4 = ('Concatenate', [('input', 'x'), ('Concatenate', [' ', ('input', 'y')])])
+    expression4 = run_synthesize(string_bustle, string_parser, variable_names4, input_examples4, 
+                                 output_examples4, expected_output4, test_num=4)
+    assert expression4 == expected_output4
+
+    # Test 5
+    variable_names5 = ["x"]
+    input_examples5 = [["hello"], ["world"], ["domination"]]
+    output_examples5 = ["ho", "wd", "dn"]
+    expected_output5 = ('Concatenate', [('Left', [('input', 'x'), 1]), ('Right', [('input', 'x'), 1])])
+    expression5 = run_synthesize(string_bustle, string_parser, variable_names5, input_examples5, 
+                                 output_examples5, expected_output5, test_num=5)
+    assert expression5 == expected_output5
+
+    # Test 6
+    variable_names6 = ["x"]
+    input_examples6 = [["hello"], ["world"], ["domination"]]
+    output_examples6 = ["xxxhello", "xxxworld", "xxxdomination"]
+    expected_output6 = ('Concatenate', ['xxx', ('input', 'x')])
+    expression6 = run_synthesize(string_bustle, string_parser, variable_names6, input_examples6, 
+                                 output_examples6, expected_output6, test_num=6)
+    assert expression6 == expected_output6
+
+    # Test 7
+    variable_names7 = ["x"]
+    input_examples7 = [["abcdef"], ["abcxy"], ["abcop"]]
+    output_examples7 = ["codef", "coxy", "coop"]
+    expected_output7 = ('Substitute', [('input', 'x'), 'abc', 'co'])
+    expression7 = run_synthesize(string_bustle, string_parser, variable_names7, input_examples7, 
+                                 output_examples7, expected_output7, test_num=7)
+    assert expression7 == expected_output7
+
+    print("")
+    print("The system passed all test cases for String DSL!")
 
 def test():
     parser = optparse.OptionParser()
