@@ -119,23 +119,64 @@ class Bustle:
                         return expression
         
         return self.E
+
+def run_synthesize(bustle, parser, variable_names, input_examples, 
+                          output_examples, expected_output, test_num=1, weight_threshold=10):
+    synthesized_expression = bustle.synthesize(variable_names=variable_names, 
+                                               input_examples=input_examples, 
+                                               output_examples=output_examples, 
+                                               weight_threshold=weight_threshold)
+    print("")
+    print("Test " + str(test_num) + ": ")
+    print("User provided variable names: " + str(variable_names))
+    print("User provided input / output examples :")
+    for i in range(len(input_examples)):
+        print(str(input_examples[i]) + " -> " + str(output_examples[i]))
+    print("Expected program: " + str(parser.generate_string_from_parse_tree(expected_output)))
+    print("Generated program: " + str(parser.generate_string_from_parse_tree(synthesized_expression)))
+    
+    return synthesized_expression
     
 def test_arithm_dsl():
     from arithm_dsl import Arithm_dsl
+    from simple_dsl_parser import Simple_parser
+
+    print("")
+    print("Executing BUSTLE for Arithm DSL...")
 
     arithm_dsl = Arithm_dsl()
     arithm_bustle = Bustle(arithm_dsl)
+    arithm_parser = Simple_parser(arithm_dsl)
 
-    expression1 = arithm_bustle.synthesize(variable_names=["x", "y"], input_examples=[[2,3], [4,5]], output_examples=[6, 20], weight_threshold=5)
-    assert expression1 == ('mul', [('input', 'x'), ('input', 'y')])
+    # Test 1
+    variable_names1 = ["x", "y"]
+    input_examples1 = [[2,3], [4,5]]
+    output_examples1 = [6, 20]
+    expected_output1 = ('mul', [('input', 'x'), ('input', 'y')])
+    expression1 = run_synthesize(arithm_bustle, arithm_parser, variable_names1, input_examples1, 
+                                 output_examples1, expected_output1, test_num=1)
+    assert expression1 == expected_output1
+    
+    # Test 2
+    variable_names2 = ["x", "y"]
+    input_examples2 = [[2,4], [4,5]]
+    output_examples2 = [-6, -9]
+    expected_output2 = ('neg', [('add', [('input', 'x'), ('input', 'y')])])
+    expression2 = run_synthesize(arithm_bustle, arithm_parser, variable_names2, input_examples2, 
+                                 output_examples2, expected_output2, test_num=2)
+    assert expression2 == expected_output2
 
-    expression2 = arithm_bustle.synthesize(variable_names=["x", "y"], input_examples=[[2,4], [4,5]], output_examples=[-6, -9], weight_threshold=5)
-    assert expression2 == ('neg', [('add', [('input', 'x'), ('input', 'y')])])
+    # Test 3
+    variable_names3 = ["x", "y", "z"]
+    input_examples3 = [[1,3,5], [7,11,13]]
+    output_examples3 = [15, 1001]
+    expected_output3 = ('mul', [('input', 'x'), ('mul', [('input', 'y'), ('input', 'z')])])
+    expression3 = run_synthesize(arithm_bustle, arithm_parser, variable_names3, input_examples3, 
+                                 output_examples3, expected_output3, test_num=3)
+    assert expression3 == expected_output3
 
-    expression3 = arithm_bustle.synthesize(variable_names=["x", "y", "z"], input_examples=[[1,3,5], [7,11,13]], output_examples=[15, 1001], weight_threshold=5)
-    assert expression3 == ('mul', [('input', 'x'), ('mul', [('input', 'y'), ('input', 'z')])])
-
-    print("Success")
+    print("")
+    print("The system passed all test cases!")
 
 def test_string_dsl():
     from string_dsl import String_dsl
