@@ -6,7 +6,7 @@ class Arithm_dsl:
 
     def initialize_ops(self):
         op_dict = {}
-        deafult_ops = ["add", "sub", "mul", "div", "neg", "eq", "gt", "lt", "max", "min", "if"]
+        deafult_ops = ["add", "sub", "mul", "div", "neg", "eq", "gt", "lt", "max", "min", "if", "and", "or"]
         for op in deafult_ops:
             op_dict[op.lower()] = op
         
@@ -28,6 +28,9 @@ class Arithm_dsl:
         elif op in ["eq", "gt", "lt"]:
             op_type = "bool"
             arg_type = ("int", "int")
+        elif op in ["and", "or"]:
+            op_type = "bool"
+            arg_type = ("bool", "bool")
         elif op in ["if"]:
             op_type = "int"
             arg_type = ("bool", "int", "int")
@@ -74,6 +77,10 @@ class Arithm_dsl:
                 return args[1]
             else:
                 return args[2]
+        elif op == "and":
+            return args[0] and args[1]
+        elif op == "or":
+            return args[0] or args[1]
         else:
             assert False, "Invalid operator " + str(op)
     
