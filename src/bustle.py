@@ -175,6 +175,15 @@ def test_arithm_dsl():
                                  output_examples3, expected_output3, test_num=3)
     assert expression3 == expected_output3
 
+    # Test 4
+    variable_names4 = ["x", "y"]
+    input_examples4 = [[10, 2], [13, 19], [7, 5]]
+    output_examples4 = [10, 19, 7]
+    expected_output4 = ('max', [('input', 'x'), ('input', 'y')])
+    expression4 = run_synthesize(arithm_bustle, arithm_parser, variable_names4, input_examples4, 
+                                 output_examples4, expected_output4, test_num=4)
+    assert expression4 == expected_output4
+
     print("")
     print("The system passed all test cases!")
 
