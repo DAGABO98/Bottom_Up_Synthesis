@@ -1,5 +1,5 @@
 # Bottom Up Synthesis
-Repo for simple implementation of Bottom Up Synthesis for first class assignment
+Repo for simple implementation of Bottom Up Synthesis for first class assignment. Implementation is based on non-ML BUSTLE algorithm presented in [BUSTLE: Bottom-up Program Synthesis Through Learning-guided Exploration](https://arxiv.org/pdf/2007.14381.pdf)
 
 ## Testing
 
