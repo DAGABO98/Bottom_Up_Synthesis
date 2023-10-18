@@ -146,10 +146,13 @@ class String_dsl:
     def _get_max_output_overlap(self, output_examples):
         max_output_match = ""
         for output_index in range(len(output_examples)-1):
-            if output_index == 0:
-                max_output_match = self._get_string_overlap(output_examples[output_index], output_examples[output_index+1])
+            if type(output_examples[output_index]) is str:
+                if output_index == 0:
+                    max_output_match = self._get_string_overlap(output_examples[output_index], output_examples[output_index+1])
+                else:
+                    max_output_match = self._get_string_overlap(max_output_match, output_examples[output_index+1])
             else:
-                max_output_match = self._get_string_overlap(max_output_match, output_examples[output_index+1])
+                continue
         
         return max_output_match
     
