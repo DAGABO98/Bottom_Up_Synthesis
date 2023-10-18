@@ -80,7 +80,7 @@ class Simple_parser:
     def generate_string_from_parse_tree(self, parse_tree):
         if type(parse_tree) is tuple or type(parse_tree) is list:
             if parse_tree[0] == "input":
-                return str(parse_tree[1])
+                return "input(" + str(parse_tree[1]) + ")"
             else:
                 return parse_tree[0] + "(" + ", ".join([self.generate_string_from_parse_tree(arg_tree) for arg_tree in parse_tree[1]]) + ")"
         elif type(parse_tree) is str:
