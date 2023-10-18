@@ -24,41 +24,35 @@ class String_dsl:
         if op == "Concatenate":
             return ("str", ("str", "str"))
         elif op == "Left":
-            return ("str", ("str", "str"))
+            return ("str", ("str", "int"))
         elif op == "Right":
-            return ("str", ("str", "str"))
+            return ("str", ("str", "int"))
         elif op == "Replace":
-            return ("str", ("str", "str"))
+            return ("str", ("str", "int", "int", "str"))
         elif op == "Trim":
-            return ("str", ("str", "str"))
+            return ("str", ("str", ))
         elif op == "Repeat":
-            return ("str", ("str", "str"))
+            return ("str", ("str", "int"))
         elif op == "Substitute":
-            return ("str", ("str", "str"))
+            return ("str", ("str", "str", "str"))
         elif op == "SubstituteI":
-            return ("str", ("str", "str"))
+            return ("str", ("str", "str", "str", "int"))
         elif op == "ToText":
-            return ("str", ("str", "str"))
+            return ("str", ("int",))
         elif op == "LowerCase":
-            return ("str", ("str", "str"))
+            return ("str", ("str",))
         elif op == "UpperCase":
-            return ("str", ("str", "str"))
+            return ("str", ("str",))
         elif op == "ProperCase":
-            return ("str", ("str", "str"))
+            return ("str", ("str",))
         elif op == "Equals":
-            return ("str", ("str", "str"))
+            return ("bool", ("int", "int"))
         elif op == "Len":
-            return ("str", ("str", "str"))
-        elif op == "Add":
-            return 0
-        elif op == "Multiply":
-            return 0
-        elif op == "Subtract":
-            return 0
-        elif op == "Divide":
-            return 0
+            return ("int", ("str",))
+        elif op in ["Add", "Multiply", "Subtract", "Divide"]:
+            return ("int", ("int", "int"))
         elif op == "If":
-            return ("str", ("str", "str"))
+            return ("str", ("bool", "str", "str"))
         else:
             assert False, "Invalid operator " + str(op)
     
@@ -133,14 +127,43 @@ class String_dsl:
                 return self.execute_op(parse_tree[0], evaluated_args)
         else:
             return parse_tree
+        
+    def _generate_string_sets(self, input_string, output_string):
+        input_string_set = set(input_string)
+        output_string_set = set(output_string)
+        constant_set = input_string_set.union(output_string_set.difference(input_string_set))
+        return constant_set
     
-    def extract_constants(self, input_examples, output_examples, input_type, output_type):
-        default_constants = [0, 1, 2, 3, 5, 7, 11] #prime numbers
+    def extract_constants(self, input_examples, output_examples):
+        int_constants = [0, 1, 2]
         int_constant_list = []
-        for constant_value in default_constants:
+        for constant_value in int_constants:
             constants_for_examples = [constant_value for _ in range(len(input_examples))]
             int_constant_list.append(("int", (constant_value, constants_for_examples)))
+
+        input_constant_set = set()
+        for input_index in range(len(input_examples)):
+            input_example = input_examples[input_index]
+            output_example = output_examples[input_index]
+            if len(input_example) == 1:
+                input_string = input_example[0]
+                temp_input_constant_set = self._generate_string_sets(input_string=input_string, 
+                                                                     output_string=output_example)
+                input_constant_set |= temp_input_constant_set
+
+            else:
+                for i in range(len(input_example)):
+                    input_string = input_example[i]
+                    temp_input_constant_set = self._generate_string_sets(input_string=input_string, 
+                                                                         output_string=output_example)
+                    input_constant_set |= temp_input_constant_set
         
+        str_constant_list = []
+        for string_constant in input_constant_set:
+            constants_for_examples = [string_constant for _ in range(len(input_examples))]
+            str_constant_list.append(("str", (string_constant, constants_for_examples)))
+
+        constant_list = int_constant_list + str_constant_list
         return constant_list
     
     def _infer_types(self, example):
