@@ -9,8 +9,8 @@ class String_dsl:
     def initialize_ops(self):
         op_dict = {}
         deafult_ops = ["Concatenate", "Left", "Right", "Replace", "Trim", "Repeat", "Substitute", 
-                       "SubstituteI", "ToText", "LowerCase", "UpperCase", "ProperCase", 
-                       "Equals", "Len", "If"]
+                       "ToText", "LowerCase", "UpperCase", "ProperCase", "Equals", "Lt", "Gt", 
+                       "Len", "If"]
         for op in deafult_ops:
             op_dict[op.lower()] = op
         
@@ -24,39 +24,45 @@ class String_dsl:
     
     def get_op_types(self, op):
         if op == "Concatenate":
-            return ("str", ("str", "str"))
-        elif op == "Left":
-            return ("str", ("str", "int"))
-        elif op == "Right":
-            return ("str", ("str", "int"))
+            op_type = "str"
+            arg_type = ("str", "str")
+        elif op in ["Left", "Right"]:
+            op_type = "str"
+            arg_type = ("str", "int")
         elif op == "Replace":
-            return ("str", ("str", "int", "int", "str"))
+            op_type = "str"
+            arg_type = ("str", "int", "int", "str")
         elif op == "Trim":
-            return ("str", ("str", ))
+            op_type = "str"
+            arg_type = ("str", )
         elif op == "Repeat":
-            return ("str", ("str", "int"))
+            op_type = "str"
+            arg_type = ("str", "int")
         elif op == "Substitute":
-            return ("str", ("str", "str", "str"))
-        elif op == "SubstituteI":
-            return ("str", ("str", "str", "str", "int"))
+            op_type = "str"
+            arg_type = ("str", "str", "str")
         elif op == "ToText":
-            return ("str", ("int",))
-        elif op == "LowerCase":
-            return ("str", ("str",))
-        elif op == "UpperCase":
-            return ("str", ("str",))
-        elif op == "ProperCase":
-            return ("str", ("str",))
-        elif op == "Equals":
-            return ("bool", ("int", "int"))
+            op_type = "str"
+            arg_type = ("int",)
+        elif op in ["LowerCase", "UpperCase", "ProperCase"]:
+            op_type = "str"
+            arg_type = ("str",)
+        elif op in ["Equals", "Lt", "Gt"]:
+            op_type = "bool"
+            arg_type = ("int", "int")
         elif op == "Len":
-            return ("int", ("str",))
+            op_type = "int"
+            arg_type = ("str",)
         elif op in ["Add", "Multiply", "Subtract", "Divide"]:
-            return ("int", ("int", "int"))
+            op_type = "int"
+            arg_type = ("int", "int")
         elif op == "If":
-            return ("str", ("bool", "str", "str"))
+            op_type = "str"
+            arg_type = ("bool", "str", "str")
         else:
             assert False, "Invalid operator " + str(op)
+        
+        return (op_type, arg_type)
     
     def get_op_arg_types(self, op):
         _, arg_types = self.get_op_types(op)
@@ -90,8 +96,6 @@ class String_dsl:
             return args[0] * args[1]
         elif op == "Substitute":
             return args[0].replace(args[1], args[2])
-        elif op == "SubstituteI":
-            return args[0].replace(args[1], args[2], args[3])
         elif op == "ToText":
             return str(args[0])
         elif op == "LowerCase":
@@ -102,6 +106,10 @@ class String_dsl:
             return args[0].title()
         elif op == "Equals":
             return args[0] == args[1]
+        elif op == "Lt":
+            return args[0] < args[1]
+        elif op == "Gt":
+            return args[0] > args[1]
         elif op == "Len":
             return len(args[0])
         elif op == "Add":

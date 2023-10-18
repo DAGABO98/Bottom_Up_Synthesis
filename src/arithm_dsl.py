@@ -20,15 +20,21 @@ class Arithm_dsl:
     
     def get_op_types(self, op):
         if op in ["add", "sub", "mul", "div", "max", "min"]:
-            return ("int", ("int", "int"))
+            op_type = "int"
+            arg_type = ("int", "int")
         elif op in ["neg"]:
-            return ("int", ("int",))
+            op_type = "int"
+            arg_type = ("int",)
         elif op in ["eq", "gt", "lt"]:
-            return ("bool", ("int", "int"))
+            op_type = "bool"
+            arg_type = ("int", "int")
         elif op in ["if"]:
-            return ("int", ("bool", "int", "int"))
+            op_type = "int"
+            arg_type = ("bool", "int", "int")
         else:
             assert False, "Invalid operator " + str(op)
+        
+        return (op_type, arg_type)
     
     def get_op_arg_types(self, op):
         _, arg_types = self.get_op_types(op)
