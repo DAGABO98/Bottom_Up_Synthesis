@@ -166,7 +166,7 @@ def test_arithm_dsl():
 
     # Test 3
     variable_names3 = ["x", "y", "z"]
-    input_examples3 = [[1,3,5], [7,11,13]]
+    input_examples3 = [[1, 3, 5], [7, 11, 13]]
     output_examples3 = [15, 1001]
     expected_output3 = ('mul', [('input', 'x'), ('mul', [('input', 'y'), ('input', 'z')])])
     expression3 = run_synthesize(arithm_bustle, arithm_parser, variable_names3, input_examples3, 
@@ -174,13 +174,22 @@ def test_arithm_dsl():
     assert expression3 == expected_output3
 
     # Test 4
-    variable_names4 = ["x", "y"]
-    input_examples4 = [[10, 2], [13, 19], [7, 5]]
-    output_examples4 = [10, 19, 7]
-    expected_output4 = ('max', [('input', 'x'), ('input', 'y')])
+    variable_names4 = ["x"]
+    input_examples4 = [[5], [4], [3], [2], [1], [4], [5], [15]]
+    output_examples4 = [1, 0, 0, 0, 0, 0, 1, 0]
+    expected_output4 = ('mul', [('div', [5, ('input', 'x')]), ('div', [('input', 'x'), 5])])
     expression4 = run_synthesize(arithm_bustle, arithm_parser, variable_names4, input_examples4, 
                                  output_examples4, expected_output4, test_num=4)
     assert expression4 == expected_output4
+
+    # Test 5
+    variable_names5 = ["x"]
+    input_examples5 = [[5], [4], [3], [2], [1], [0], [15]]
+    output_examples5 = [5, 4, 3, 1, 1, 1, 15]
+    expected_output5 = ('if', [('gt', [3, ('input', 'x')]), 1, ('input', 'x')])
+    expression5 = run_synthesize(arithm_bustle, arithm_parser, variable_names5, input_examples5, 
+                                 output_examples5, expected_output5, test_num=5)
+    assert expression5 == expected_output5
 
     print("")
     print("The system passed all test cases!")
