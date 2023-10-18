@@ -68,16 +68,20 @@ class Bustle:
         return arg_list
     
     def execute_operation(self, op, args):
-        arg_exprs = [expr for expr, _ in args]
-        arg_vals = [val for _, val in args]
+        arg_expressions = []
+        arg_values = []
 
-        values = []
-        for op_args in zip(*arg_vals):
+        for expression, value in args:
+            arg_expressions.append(expression)
+            arg_values.append(value)
+
+        op_values = []
+        for op_args in zip(*arg_values):
             op_value = self.dsl.execute_op(op, op_args)
-            values.append(op_value)
+            op_values.append(op_value)
         
-        expression = (op, arg_exprs)
-        return (expression, values)
+        op_expression = (op, arg_expressions)
+        return (op_expression, op_values)
 
     def synthesize(self, variable_names, input_examples, output_examples, weight_threshold=25):
         self.E = {}
