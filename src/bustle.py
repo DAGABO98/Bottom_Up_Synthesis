@@ -268,6 +268,15 @@ def test_string_dsl():
                                  output_examples7, expected_output7, test_num=7)
     assert expression7 == expected_output7
 
+    # Test 8
+    variable_names8 = ["x"]
+    input_examples8 = [[" abcdef "], [" ghijk "], [" lmno "]]
+    output_examples8 = [6, 5, 4]
+    expected_output8 = ('Len', [('Substitute', [('input', 'x'), ' ', ''])])
+    expression8 = run_synthesize(string_bustle, string_parser, variable_names8, input_examples8, 
+                                 output_examples8, expected_output8, test_num=8)
+    assert expression8 == expected_output8
+
     print("")
     print("The system passed all test cases for String DSL!")
 
