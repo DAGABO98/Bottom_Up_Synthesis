@@ -273,7 +273,7 @@ def test_string_dsl():
 
 def test():
     parser = optparse.OptionParser()
-    parser.add_option("--mode", type=int, dest='mode', default=0, help='Select mode of operation.')
+    parser.add_option("--mode", type=int, dest='mode', default=2, help='Select mode of operation.')
 
     (options, args) = parser.parse_args()
 
