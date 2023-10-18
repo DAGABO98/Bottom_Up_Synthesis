@@ -88,7 +88,7 @@ class Arithm_dsl:
             return parse_tree
     
     def extract_constants(self, input_examples, output_examples):
-        default_constants = [0, 1, 2, 3, 5] 
+        default_constants = [0, 1, 2, 3, 5, 7, 11] 
         constant_list = []
         for constant_value in default_constants:
             constants_for_examples = [constant_value for _ in range(len(input_examples))]
