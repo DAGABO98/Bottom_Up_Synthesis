@@ -6,7 +6,7 @@ class Arithm_dsl:
 
     def initialize_ops(self):
         op_dict = {}
-        deafult_ops = ["add", "sub", "mul", "div", "neg", "eq", "gt", "lt", "max", "min"]
+        deafult_ops = ["add", "sub", "mul", "div", "neg", "eq", "gt", "lt", "max", "min", "if"]
         for op in deafult_ops:
             op_dict[op.lower()] = op
         
@@ -25,6 +25,8 @@ class Arithm_dsl:
             return ("int", ("int",))
         elif op in ["eq", "gt", "lt"]:
             return ("bool", ("int", "int"))
+        elif op in ["if"]:
+            return ("int", ("bool", "int", "int"))
         else:
             assert False, "Invalid operator " + str(op)
     
@@ -61,6 +63,11 @@ class Arithm_dsl:
             return max(args[0], args[1])
         elif op == "min":
             return min(args[0], args[1])
+        elif op == "if":
+            if args[0]:
+                return args[1]
+            else:
+                return args[2]
         else:
             assert False, "Invalid operator " + str(op)
     
@@ -75,7 +82,7 @@ class Arithm_dsl:
             return parse_tree
     
     def extract_constants(self, input_examples, output_examples, input_type, output_type):
-        default_constants = [0, 1, 2] 
+        default_constants = [0, 1, 2, 3, 5] 
         constant_list = []
         for constant_value in default_constants:
             constants_for_examples = [constant_value for _ in range(len(input_examples))]
