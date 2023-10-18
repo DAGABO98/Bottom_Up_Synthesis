@@ -87,6 +87,8 @@ class Simple_parser:
             return '"' + parse_tree +'"'
         elif type(parse_tree) is int:
             return str(parse_tree)
+        elif type(parse_tree) is bool:
+            return str(parse_tree)
         else:
             assert False, "invalid parse tree " + str(parse_tree)
             
