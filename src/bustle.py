@@ -53,17 +53,15 @@ class Bustle:
     def populate_arg_list(self, n, weight, arg_types):
         if n == 1:
             arg_list = []
-            for arg_type in arg_types:
-                for expression in self.get_expressions_for_weight_and_type(weight, arg_type):
-                    arg_list.append([expression])
+            for expression in self.get_expressions_for_weight_and_type(weight, arg_types[0]):
+                arg_list.append([expression])
         else:
             arg_list = []
             for curr_weight in range(1, weight-n+2):
-                for arg_type in arg_types:
-                    for expression in self.get_expressions_for_weight_and_type(curr_weight, arg_type):
-                        rest_of_expressions = self.populate_arg_list(n-1, weight-curr_weight, arg_types)
-                        for tail_expressions in rest_of_expressions:
-                            arg_list.append([expression] + tail_expressions)
+                for expression in self.get_expressions_for_weight_and_type(curr_weight, arg_types[0]):
+                    rest_of_expressions = self.populate_arg_list(n-1, weight-curr_weight, arg_types[1:])
+                    for tail_expressions in rest_of_expressions:
+                        arg_list.append([expression] + tail_expressions)
         
         return arg_list
     
